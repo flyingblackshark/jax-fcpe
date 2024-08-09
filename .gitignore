@@ -1,0 +1,7 @@
+/.cache
+/.vscode
+/__pycache__
+/fcpe_c_v001.pt
+/test.py
+/test.wav
+/test2.py

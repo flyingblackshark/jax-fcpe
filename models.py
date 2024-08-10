@@ -129,14 +129,14 @@ class CFNaiveMelPE(nn.Module):
         confident  = jnp.max(y, axis=-1, keepdims=True)
         max_index = jnp.argmax(y ,axis=-1, keepdims=True)
         local_argmax_index = jnp.arange(0, 9) + (max_index - 4)
-        local_argmax_index.at[local_argmax_index < 0].set(0)
-        local_argmax_index.at[local_argmax_index >= self.out_dims].set(self.out_dims - 1)
+        local_argmax_index = local_argmax_index.at[local_argmax_index < 0].set(0)
+        local_argmax_index = local_argmax_index.at[local_argmax_index >= self.out_dims].set(self.out_dims - 1)
         ci_l = jnp.take_along_axis(ci, axis=-1, indices=local_argmax_index)
         y_l = jnp.take_along_axis(y, axis=-1, indices=local_argmax_index)
         rtn = jnp.sum(ci_l * y_l, axis=-1, keepdims=True) / jnp.sum(y_l, axis=-1, keepdims=True)  # cents: [B,N,1]
         if mask:
             confident_mask = jnp.ones_like(confident)
-            confident_mask.at[confident <= threshold].set(float("-INF"))
+            confident_mask = confident_mask.at[confident <= threshold].set(float("-INF"))
             rtn = rtn * confident_mask
         return rtn  # (B, T, 1)
 

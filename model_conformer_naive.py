@@ -82,7 +82,7 @@ class CFNEncoderLayer(nn.Module):
         #     )
         # else:
         self.conformer = ConformerConvModule(self.dim_model)
-        self.norm = nn.LayerNorm()
+        #self.norm = nn.LayerNorm()
 
         #self.dropout = nn.Dropout(0.1)  # 废弃代码,仅做兼容性保留
 

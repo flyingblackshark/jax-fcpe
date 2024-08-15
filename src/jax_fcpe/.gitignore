@@ -1,0 +1,10 @@
+/.cache
+/.vscode
+/__pycache__
+/fcpe_c_v001.pt
+/test.py
+/test.wav
+/test2.py
+/test3.py
+test3.py
+/jax_fcpe.egg-info

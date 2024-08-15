@@ -1,17 +1,5 @@
-#import torch
-
-#from torch import nn
-import math
-from functools import partial
-from einops import rearrange, repeat
 import jax.numpy as jnp
 import flax.linen as nn
-#from local_attention import LocalAttention
-#import torch.nn.functional as F
-
-# From https://github.com/CNChTu/Diffusion-SVC/ by CNChTu
-# License: MIT
-
 
 class ConformerNaiveEncoder(nn.Module):
     """

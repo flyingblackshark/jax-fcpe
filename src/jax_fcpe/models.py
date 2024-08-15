@@ -1,15 +1,7 @@
 import jax
 import jax.numpy as jnp
-import flax
 import flax.linen as nn
-from flax import traverse_util
-# import weight_norm from different version of pytorch
-# try:
-#     from torch.nn.utils.parametrizations import weight_norm
-# except ImportError:
-#     from torch.nn.utils import weight_norm
-
-from model_conformer_naive import ConformerNaiveEncoder
+from .model_conformer_naive import ConformerNaiveEncoder
 
 
 class CFNaiveMelPE(nn.Module):
@@ -129,14 +121,14 @@ class CFNaiveMelPE(nn.Module):
         confident  = jnp.max(y, axis=-1, keepdims=True)
         max_index = jnp.argmax(y ,axis=-1, keepdims=True)
         local_argmax_index = jnp.arange(0, 9) + (max_index - 4)
-        local_argmax_index = local_argmax_index.at[local_argmax_index < 0].set(0)
-        local_argmax_index = local_argmax_index.at[local_argmax_index >= self.out_dims].set(self.out_dims - 1)
+        local_argmax_index = jnp.where(local_argmax_index < 0,0,local_argmax_index)
+        local_argmax_index = jnp.where(local_argmax_index >= self.out_dims , self.out_dims - 1,local_argmax_index)
         ci_l = jnp.take_along_axis(ci, axis=-1, indices=local_argmax_index)
         y_l = jnp.take_along_axis(y, axis=-1, indices=local_argmax_index)
         rtn = jnp.sum(ci_l * y_l, axis=-1, keepdims=True) / jnp.sum(y_l, axis=-1, keepdims=True)  # cents: [B,N,1]
         if mask:
             confident_mask = jnp.ones_like(confident)
-            confident_mask = confident_mask.at[confident <= threshold].set(float("-INF"))
+            confident_mask = jnp.where(confident <= threshold,float("-INF"),confident_mask)
             rtn = rtn * confident_mask
         return rtn  # (B, T, 1)
 
@@ -159,7 +151,6 @@ class CFNaiveMelPE(nn.Module):
         ci = jnp.broadcast_to(cent_table[None, None, :], (B, N, -1))
         return jnp.exp(-jnp.square(ci - cents) / 1250) * mask.astype(jnp.float32)
 
-    #@torch.no_grad()
     def infer(self,
               mel: jnp.ndarray,
               decoder: str = "local_argmax",  # "argmax" or "local_argmax"

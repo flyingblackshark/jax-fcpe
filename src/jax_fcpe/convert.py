@@ -1,11 +1,9 @@
 import flax
-import jax
 import torch
-def load_params():
-    state_dict = torch.load("fcpe_c_v001.pt")["model"]
-    params = {
 
-    }
+def convert_torch_weights(path = "fcpe_c_v001.pt"):
+    state_dict = torch.load(path,map_location=torch.device('cpu'))["model"]
+    params = {}
     params["input_stack_conv1.kernel"] = state_dict["input_stack.0.weight"].transpose(0,2)
     params["input_stack_conv1.bias"] = state_dict["input_stack.0.bias"]
     params["input_stack_norms.scale"] = state_dict["input_stack.1.weight"]

@@ -68,7 +68,7 @@ def download_model():
 def load_model(load_path: str = None,):
     if not load_path:
         load_path = download_model()
-    with open("/home/fbs/jax-fcpe/src/jax_fcpe/fcpe_c_v001.msgpack", "rb") as msgpack_file:
+    with open(load_path, "rb") as msgpack_file:
         msgpack_content = msgpack_file.read()
     params =  flax.serialization.msgpack_restore(msgpack_content)
     params = {"params":params}

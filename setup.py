@@ -16,6 +16,4 @@ setup(
     packages=['jax_fcpe'],
     long_description=long_description,
     long_description_content_type='text/markdown',
-    keywords=['pitch', 'audio', 'speech', 'music', 'jax', 'flax', 'fcpe'],
-    classifiers=['License :: OSI Approved :: MIT License'],
-    license='MIT')
+    classifiers=['License :: OSI Approved :: MIT License'])

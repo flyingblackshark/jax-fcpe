@@ -1,8 +1,4 @@
-import audax.core
-import audax.core.functional
-import audax.core.stft
 import jax.numpy as jnp
-import audax
 from librosa.filters import mel as librosa_mel_fn
 from .utils import load_model
 import jax
@@ -12,12 +8,13 @@ def get_f0(wav,sr):
     HOP_SIZE = 160
     N_FFT = 1024
     NUM_MELS = 128
-    window = jnp.hanning(WIN_SIZE)
     pad_size = (WIN_SIZE-HOP_SIZE)//2
     wav = jnp.pad(wav, (pad_size, pad_size),mode="reflect")
     f0_min = 80.
     f0_max = 880.
-    spec = audax.core.stft.stft(wav,N_FFT,HOP_SIZE,WIN_SIZE,window,onesided=True,center=False)
+    _,_,spec = jax.scipy.signal.stft(y,nfft=N_FFT,noverlap=WIN_SIZE-HOP_SIZE,nperseg=WIN_SIZE,boundary=None)
+    spectrum_win = jnp.sin(jnp.linspace(0, jnp.pi, WIN_SIZE, endpoint=False)) ** 2
+    spec *= spectrum_win.sum()
     spec = jnp.sqrt(spec.real**2 + spec.imag**2 + (1e-9))
     mel_basis = librosa_mel_fn(sr=sr, n_fft=N_FFT, n_mels=NUM_MELS, fmin=0, fmax=8000)
     mel_basis = jnp.asarray(mel_basis,dtype=jnp.float32)

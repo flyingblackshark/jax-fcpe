@@ -28,7 +28,9 @@ def get_f0(wav,model,params):
     window = jnp.hanning(WIN_SIZE)
     pad_size = (WIN_SIZE-HOP_SIZE)//2
     wav = jnp.pad(wav, ((0,0),(pad_size, pad_size)),mode="reflect")
-    spec = audax.core.stft.stft(wav,N_FFT,HOP_SIZE,WIN_SIZE,window,onesided=True,center=False)
+    _,_,spec = jax.scipy.signal.stft(y,nfft=N_FFT,noverlap=WIN_SIZE-HOP_SIZE,nperseg=WIN_SIZE,boundary=None)
+    spectrum_win = jnp.sin(jnp.linspace(0, jnp.pi, WIN_SIZE, endpoint=False)) ** 2
+    spec *= spectrum_win.sum()
     spec = jnp.sqrt(spec.real**2 + spec.imag**2 + (1e-9))
     spec = spec.transpose(0,2,1)
     mel = jnp.matmul(mel_basis, spec)
